@@ -76,6 +76,6 @@ vertical_alignment = 1
 [node name="NextLevelButton" type="Button" parent="WinLayer/WinPanel/Box/VBox"]
 custom_minimum_size = Vector2(220, 44)
 layout_mode = 2
-text = "2. Bölüme Başla"
+text = "Sonraki Bölüm"
 
 [connection signal="pressed" from="WinLayer/WinPanel/Box/VBox/NextLevelButton" to="." method="_on_next_level_pressed"]

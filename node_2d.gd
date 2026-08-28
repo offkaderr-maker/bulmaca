@@ -244,6 +244,14 @@ func check_final_word() -> void:
 
 func _show_level_complete_panel() -> void:
 	is_dragging = false
+	# Bir sonraki bölüm numarasını hesapla (100 sonrası 1'e döner)
+	var sonraki = current_level_id + 1
+	if sonraki > 100:
+		sonraki = 1
+	# Butonu bul ve metnini güncelle
+	var btn = get_node_or_null("WinLayer/WinPanel/Box/VBox/NextLevelButton")
+	if btn:
+		btn.text = "%d. Bölüme Başla" % sonraki
 	win_panel.visible = true
 
 func _on_next_level_pressed() -> void:
