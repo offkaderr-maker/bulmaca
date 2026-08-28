@@ -20,12 +20,51 @@ var discovered_words: Array = []
 var letter_buttons: Array = []
 var last_drag_pos: Vector2 = Vector2.ZERO
 const LETTER_HIT_RADIUS: float = 48.0
+const SAVE_PATH: String = "user://save_data.cfg"
+var current_level_id: int = 1
 
 func _ready() -> void:
+	current_level_id = _load_saved_level_id()
+	var next_scene := _scene_path_for_level(current_level_id)
+	if next_scene != "" and next_scene != scene_file_path:
+		get_tree().change_scene_to_file(next_scene)
+		return
 	load_and_build_puzzle()
 
+func _json_path_for_level(level_id: int) -> String:
+	if level_id <= 1:
+		return "res://bulmaca_cikisi.json"
+	var numbered := "res://bulmaca_cikisi_%d.json" % level_id
+	if FileAccess.file_exists(numbered):
+		return numbered
+	return "res://bulmaca_cikisi.json"
+
+func _scene_path_for_level(level_id: int) -> String:
+	if level_id <= 1:
+		return ""
+	var numbered := "res://bulmaca_cikisi_%d.json" % level_id
+	if FileAccess.file_exists(numbered):
+		return ""
+	return "res://scenes/bolum_2.tscn"
+
+func _save_level_id(level_id: int) -> void:
+	var cfg := ConfigFile.new()
+	cfg.load(SAVE_PATH)
+	cfg.set_value("progress", "level_id", level_id)
+	var err := cfg.save(SAVE_PATH)
+	if err != OK:
+		print("Kayıt yazılamadı: ", SAVE_PATH, " hata=", err)
+	else:
+		print("İlerleme kaydedildi (telefon/user://): level_id=", level_id)
+
+func _load_saved_level_id() -> int:
+	var cfg := ConfigFile.new()
+	if cfg.load(SAVE_PATH) != OK:
+		return 1
+	return int(cfg.get_value("progress", "level_id", 1))
+
 func load_and_build_puzzle() -> void:
-	var file = FileAccess.open("res://bulmaca_cikisi.json", FileAccess.READ)
+	var file = FileAccess.open(_json_path_for_level(current_level_id), FileAccess.READ)
 	if not file:
 		print("Hata: JSON dosyası bulunamadı kanka!")
 		return
@@ -136,6 +175,9 @@ func _pick_letters_along_segment(from_pos: Vector2, to_pos: Vector2) -> void:
 		_on_letter_entered(hit[1])
 
 func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_W:
+		_show_level_complete_panel()
+		return
 	if win_panel.visible:
 		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -202,11 +244,13 @@ func _show_level_complete_panel() -> void:
 	win_panel.visible = true
 
 func _on_next_level_pressed() -> void:
-	var next_path := "res://scenes/bolum_2.tscn"
-	if ResourceLoader.exists(next_path):
-		get_tree().change_scene_to_file(next_path)
+	current_level_id += 1
+	_save_level_id(current_level_id)
+	var next_scene := _scene_path_for_level(current_level_id)
+	if next_scene != "":
+		get_tree().change_scene_to_file(next_scene)
 	else:
-		print("2. bölüm sahnesi henüz yok: ", next_path)
+		get_tree().reload_current_scene()
 
 func find_label_recursive(node: Node) -> Label:
 	if node is Label:
