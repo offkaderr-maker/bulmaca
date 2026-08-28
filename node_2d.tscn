@@ -24,3 +24,58 @@ offset_bottom = 590.0
 label_settings = SubResource("LabelSettings_wtcfe")
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="WinLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="WinPanel" type="Control" parent="WinLayer"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Dim" type="ColorRect" parent="WinLayer/WinPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0, 0, 0, 0.55)
+
+[node name="Box" type="PanelContainer" parent="WinLayer/WinPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -80.0
+offset_right = 150.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="WinLayer/WinPanel/Box"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="WinLayer/WinPanel/Box/VBox"]
+layout_mode = 2
+text = "Tebrikler"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextLevelButton" type="Button" parent="WinLayer/WinPanel/Box/VBox"]
+custom_minimum_size = Vector2(220, 44)
+layout_mode = 2
+text = "2. Bölüme Başla"
+
+[connection signal="pressed" from="WinLayer/WinPanel/Box/VBox/NextLevelButton" to="." method="_on_next_level_pressed"]

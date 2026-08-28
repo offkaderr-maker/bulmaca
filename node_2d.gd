@@ -9,6 +9,7 @@ var circle_radius: float = 130.0
 # --- DEĞİŞKENLER ---
 @onready var line_node: Line2D = $Line2D 
 @onready var preview_label: Label = $PreviewLabel 
+@onready var win_panel: Control = $WinLayer/WinPanel 
 var is_dragging: bool = false 
 var selected_buttons: Array = [] 
 var current_word: String = "" 
@@ -135,6 +136,8 @@ func _pick_letters_along_segment(from_pos: Vector2, to_pos: Vector2) -> void:
 		_on_letter_entered(hit[1])
 
 func _input(event: InputEvent) -> void:
+	if win_panel.visible:
+		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			is_dragging = true
@@ -185,6 +188,7 @@ func check_final_word() -> void:
 			
 		if discovered_words.size() == word_cells_map.size():
 			print("BÖLÜM BİTTİ KANKA! 🎉")
+			_show_level_complete_panel()
 	else:
 		print("Yanlış kelime!")
 		
@@ -192,6 +196,17 @@ func check_final_word() -> void:
 	preview_label.text = "" 
 	selected_buttons.clear()
 	line_node.clear_points()
+
+func _show_level_complete_panel() -> void:
+	is_dragging = false
+	win_panel.visible = true
+
+func _on_next_level_pressed() -> void:
+	var next_path := "res://scenes/bolum_2.tscn"
+	if ResourceLoader.exists(next_path):
+		get_tree().change_scene_to_file(next_path)
+	else:
+		print("2. bölüm sahnesi henüz yok: ", next_path)
 
 func find_label_recursive(node: Node) -> Label:
 	if node is Label:
