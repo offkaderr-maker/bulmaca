@@ -309,8 +309,37 @@ func _input(event: InputEvent) -> void:
 			check_final_word()
 	elif event is InputEventMouseMotion and is_dragging:
 		var now = get_global_mouse_position()
+		# Önce geri dönüş kontrolü yap, sonra yeni harf eklemeye bak
+		_geri_don_kontrol(now)
 		_pick_letters_along_segment(last_drag_pos, now)
 		last_drag_pos = now
+
+# Parmak son seçili harften uzaklaşıp bir öncekine yaklaşıyorsa son harfi iptal et.
+# Birden fazla harf aynı harekette iptal edilebilir (hızlı geri çekilme için döngü).
+func _geri_don_kontrol(parmak_pos: Vector2) -> void:
+	# En az 2 harf seçili olmalı; tek harfle geri dönüş anlamsız
+	while selected_buttons.size() >= 2:
+		var son_btn    = selected_buttons[selected_buttons.size() - 1]
+		var onceki_btn = selected_buttons[selected_buttons.size() - 2]
+
+		var son_merkez    = _letter_center(son_btn)
+		var onceki_merkez = _letter_center(onceki_btn)
+
+		# Parmak son harften mi yoksa önceki harften mi uzakta?
+		# Öncekine daha yakınsa → son harfi geri al
+		if parmak_pos.distance_to(onceki_merkez) < parmak_pos.distance_to(son_merkez):
+			# Son harfi seçim listesinden çıkar
+			selected_buttons.pop_back()
+			# current_word'ün son karakterini sil
+			current_word = current_word.left(current_word.length() - 1)
+			preview_label.text = current_word
+			# Line2D'den son sabit noktayı sil
+			# (en son nokta "takip eden fare noktası" olduğu için ondan bir öncekini siliyoruz)
+			if line_node.get_point_count() > 1:
+				line_node.remove_point(line_node.get_point_count() - 1)
+		else:
+			# Geri dönüş yok, döngüyü kır
+			break
 
 func _on_letter_entered(button_node: Node) -> void:
 	if not is_dragging:
