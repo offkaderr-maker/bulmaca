@@ -159,19 +159,7 @@ func check_final_word() -> void:
 		
 		var cells_to_open = word_cells_map[current_word]
 		for cell in cells_to_open:
-			var cell_label = find_label_recursive(cell)
-			var rect_node = find_color_rect_recursive(cell)
-			
-			# Önce kutuyu yeşile boyuyoruz
-			if rect_node:
-				rect_node.color = Color("#2ecc71")
-				rect_node.z_index = 0 # Kutunun katmanını arkaya kilitle 🧱
-				
-			if cell_label:
-				# KATMAN MUCİZESİ: Harf kutunun neresinde olursa olsun onu en ön katmana zorla! 🚀
-				cell_label.z_index = 1 
-				cell_label.add_theme_color_override("font_color", Color.WHITE) # Rengi beyaz yap
-				cell_label.text = cell.get_meta("char") # Harfi bas
+			cell.reveal_letter()
 			
 		if discovered_words.size() == word_cells_map.size():
 			print("BÖLÜM BİTTİ KANKA! 🎉")

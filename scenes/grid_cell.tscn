@@ -1,28 +1,29 @@
 [gd_scene format=3 uid="uid://c7qiwbiihqprr"]
 
+[ext_resource type="Script" uid="uid://cuonshj4efb57" path="res://scenes/grid_cell.gd" id="1_gridcell"]
+
 [sub_resource type="LabelSettings" id="LabelSettings_wtcfe"]
+font_size = 44
 font_color = Color(0, 0, 0, 1)
 
-[node name="GridCell" type="Control" unique_id=812503677]
+[node name="GridCell" type="Control" unique_id=1076769935]
+custom_minimum_size = Vector2(64, 64)
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+anchors_preset = 0
+offset_right = 64.0
+offset_bottom = 64.0
+script = ExtResource("1_gridcell")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=581520448]
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1477791771]
 layout_mode = 0
 offset_right = 64.0
 offset_bottom = 64.0
 
-[node name="Label" type="Label" parent="." unique_id=1231505786]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="Label" type="Label" parent="." unique_id=1099913382]
+z_index = 1
+layout_mode = 0
+offset_right = 64.0
+offset_bottom = 64.0
 label_settings = SubResource("LabelSettings_wtcfe")
 horizontal_alignment = 1
 vertical_alignment = 1
