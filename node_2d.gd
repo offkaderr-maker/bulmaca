@@ -3,38 +3,114 @@ extends Node2D
 @export var cell_scene: PackedScene = preload("res://scenes/grid_cell.tscn")
 @export var letter_button_scene: PackedScene = preload("res://scenes/letter_button.tscn")
 
-var circle_center_pos: Vector2 = Vector2(270, 750) 
-var circle_radius: float = 130.0 
+var circle_center_pos: Vector2 = Vector2(270, 750)
+var circle_radius: float = 130.0
 
-# --- DEĞİŞKENLER ---
-@onready var line_node: Line2D = $Line2D 
-@onready var preview_label: Label = $PreviewLabel 
-@onready var win_panel: Control = $WinLayer/WinPanel 
-var is_dragging: bool = false 
-var selected_buttons: Array = [] 
-var current_word: String = "" 
-var valid_words: Array = [] 
+# --- TEMEL DEĞİŞKENLER ---
+@onready var line_node: Line2D = $Line2D
+@onready var preview_label: Label = $PreviewLabel
+@onready var win_panel: Control = $WinLayer/WinPanel
+@onready var altin_label: Label = $HudLayer/AltinLabel
+@onready var ipucu_button: Button = $HudLayer/IpucuButton
+
+var is_dragging: bool = false
+var selected_buttons: Array = []
+var current_word: String = ""
+var valid_words: Array = []
 
 var word_cells_map: Dictionary = {}
 var discovered_words: Array = []
 var letter_buttons: Array = []
 var last_drag_pos: Vector2 = Vector2.ZERO
+
 const LETTER_HIT_RADIUS: float = 48.0
 const SAVE_PATH: String = "user://save_data.cfg"
+const ALTIN_KELIME_ODULU: int = 3      # her doğru kelime için
+const ALTIN_BOLUM_ODULU: int = 5       # bölüm tamamen bitince bonus
+const ALTIN_IPUCU_MALIYETI: int = 10   # ipucu için gereken altın
+
 var current_level_id: int = 1
+var altin: int = 0
+
+# Henüz açılmamış tüm hücreleri hızlıca bulmak için tutuyoruz
+# key = Vector2(gx,gy)  →  value = cell node
+var tum_hucreler: Dictionary = {}
+
+# ===========================================================================
+# BAŞLANGIÇ
+# ===========================================================================
 
 func _ready() -> void:
 	current_level_id = _load_saved_level_id()
+	altin = _load_saved_altin()
+	_altin_guncelle()
 	load_and_build_puzzle()
 
-# Tüm bölüm verilerini bolumler_listesi.json'dan okur,
-# current_level_id'ye ait bölümü döner.
-# Bulunamazsa null döner.
+# ===========================================================================
+# ALTIN SİSTEMİ
+# ===========================================================================
+
+func _altin_kazan(miktar: int) -> void:
+	altin += miktar
+	_altin_kaydet()
+	_altin_guncelle()
+
+func _altin_harca(miktar: int) -> bool:
+	if altin < miktar:
+		return false
+	altin -= miktar
+	_altin_kaydet()
+	_altin_guncelle()
+	return true
+
+func _altin_guncelle() -> void:
+	if altin_label:
+		altin_label.text = "🪙 %d" % altin
+	# İpucu butonunu aktif/pasif et
+	if ipucu_button:
+		ipucu_button.disabled = (altin < ALTIN_IPUCU_MALIYETI)
+
+func _altin_kaydet() -> void:
+	var cfg := ConfigFile.new()
+	cfg.load(SAVE_PATH)
+	cfg.set_value("progress", "altin", altin)
+	cfg.save(SAVE_PATH)
+
+func _load_saved_altin() -> int:
+	var cfg := ConfigFile.new()
+	if cfg.load(SAVE_PATH) != OK:
+		return 0
+	return int(cfg.get_value("progress", "altin", 0))
+
+# ===========================================================================
+# KAYIT / YÜKLEME
+# ===========================================================================
+
+func _save_level_id(level_id: int) -> void:
+	var cfg := ConfigFile.new()
+	cfg.load(SAVE_PATH)
+	cfg.set_value("progress", "level_id", level_id)
+	var err := cfg.save(SAVE_PATH)
+	if err != OK:
+		print("Kayıt yazılamadı: ", err)
+	else:
+		print("Kaydedildi: level_id=", level_id)
+
+func _load_saved_level_id() -> int:
+	var cfg := ConfigFile.new()
+	if cfg.load(SAVE_PATH) != OK:
+		return 1
+	return int(cfg.get_value("progress", "level_id", 1))
+
+# ===========================================================================
+# BÖLÜM VERİSİ
+# ===========================================================================
+
 func _bolum_verisini_getir(level_id: int) -> Dictionary:
 	var dosya_yolu := "res://bolumler_listesi.json"
 	var file = FileAccess.open(dosya_yolu, FileAccess.READ)
 	if not file:
-		print("Hata: bolumler_listesi.json bulunamadı! Yol: ", dosya_yolu)
+		print("Hata: bolumler_listesi.json bulunamadı!")
 		return {}
 	var json_text = file.get_as_text()
 	file.close()
@@ -49,93 +125,78 @@ func _bolum_verisini_getir(level_id: int) -> Dictionary:
 		if int(bolum.get("level_id", -1)) == level_id:
 			return bolum
 
-	# Bulunamazsa son geçerli bölümü dön (level aşıldıysa başa sar)
 	print("Uyarı: level_id=", level_id, " bulunamadı, bölüm 1'e dönülüyor.")
 	if bolumler.size() > 0:
 		return bolumler[0]
 	return {}
 
-func _save_level_id(level_id: int) -> void:
-	var cfg := ConfigFile.new()
-	cfg.load(SAVE_PATH)
-	cfg.set_value("progress", "level_id", level_id)
-	var err := cfg.save(SAVE_PATH)
-	if err != OK:
-		print("Kayıt yazılamadı: ", SAVE_PATH, " hata=", err)
-	else:
-		print("İlerleme kaydedildi (telefon/user://): level_id=", level_id)
-
-func _load_saved_level_id() -> int:
-	var cfg := ConfigFile.new()
-	if cfg.load(SAVE_PATH) != OK:
-		return 1
-	return int(cfg.get_value("progress", "level_id", 1))
+# ===========================================================================
+# BÖLÜM YÜKLEME / İNŞA
+# ===========================================================================
 
 func load_and_build_puzzle() -> void:
 	var puzzle_data: Dictionary = _bolum_verisini_getir(current_level_id)
 	if puzzle_data.is_empty():
 		print("Hata: Bölüm verisi alınamadı! level_id=", current_level_id)
 		return
-	valid_words = puzzle_data["valid_word_list"] 
-	
+
+	valid_words = puzzle_data["valid_word_list"]
+
 	var box = puzzle_data["bounding_box"]
-	var grid_width_cells = (box["max_x"] - box["min_x"]) + 1
+	var grid_width_cells  = (box["max_x"] - box["min_x"]) + 1
 	var grid_height_cells = (box["max_y"] - box["min_y"]) + 1
-	
-	var max_allowed_width: float = 460.0
+
+	var max_allowed_width:  float = 460.0
 	var max_allowed_height: float = 380.0
-	
-	var scale_x = max_allowed_width / (grid_width_cells * 64.0)
+
+	var scale_x = max_allowed_width  / (grid_width_cells  * 64.0)
 	var scale_y = max_allowed_height / (grid_height_cells * 64.0)
-	var final_scale_factor = min(scale_x, scale_y)
-	
-	final_scale_factor = clamp(final_scale_factor, 0.4, 0.9)
+	var final_scale_factor = clamp(min(scale_x, scale_y), 0.4, 0.9)
 	var dynamic_cell_spacing = 64.0 * final_scale_factor + (6.0 * final_scale_factor)
-	
-	var total_grid_pixel_width = grid_width_cells * dynamic_cell_spacing
+
+	var total_grid_pixel_width  = grid_width_cells  * dynamic_cell_spacing
 	var total_grid_pixel_height = grid_height_cells * dynamic_cell_spacing
-	
-	var start_x = (540.0 - total_grid_pixel_width) / 2.0 + (32.0 * final_scale_factor)
+
+	var start_x = (540.0 - total_grid_pixel_width)  / 2.0 + (32.0 * final_scale_factor)
 	var start_y = 120.0 + ((max_allowed_height - total_grid_pixel_height) / 2.0) + (32.0 * final_scale_factor)
-	
+
 	var grid_start_pos = Vector2(start_x, start_y)
 	var created_cells: Dictionary = {}
-	
+
 	var placed_words = puzzle_data["words_on_board"]
 	for word_data in placed_words:
 		var w_string = word_data["word"]
-		word_cells_map[w_string] = [] 
-		
-		var cells = word_data["cells"]
-		for cell_info in cells:
+		word_cells_map[w_string] = []
+
+		for cell_info in word_data["cells"]:
 			var gx = cell_info["x"]
 			var gy = cell_info["y"]
 			var char_text = cell_info["char"]
 			var coord_key = Vector2(gx, gy)
-			
+
 			var cell_instance: Node
-			
 			if not created_cells.has(coord_key):
 				cell_instance = cell_scene.instantiate()
 				add_child(cell_instance)
-				
+
 				var pixel_x = grid_start_pos.x + (gx * dynamic_cell_spacing)
 				var pixel_y = grid_start_pos.y + (gy * dynamic_cell_spacing)
-				
 				cell_instance.global_position = Vector2(pixel_x, pixel_y) - Vector2(32, 32) * final_scale_factor
 				cell_instance.scale = Vector2(final_scale_factor, final_scale_factor)
-				
+
 				var cell_label = find_label_recursive(cell_instance)
 				if cell_label:
-					cell_label.text = "" 
-				
+					cell_label.text = ""
+
 				cell_instance.set_meta("char", char_text)
+				cell_instance.set_meta("revealed", false)
 				created_cells[coord_key] = cell_instance
+				tum_hucreler[coord_key] = cell_instance
 			else:
 				cell_instance = created_cells[coord_key]
-			
+
 			word_cells_map[w_string].append(cell_instance)
-			
+
 	var circle_layout = puzzle_data["circle_layout"]
 	for letter_data in circle_layout:
 		spawn_letter_on_circle(letter_data["char"], letter_data["angle_rad"])
@@ -143,22 +204,76 @@ func load_and_build_puzzle() -> void:
 func spawn_letter_on_circle(char_text: String, angle_rad: float) -> void:
 	var letter_instance = letter_button_scene.instantiate()
 	add_child(letter_instance)
-	
+
 	var spawn_pos = Vector2(
 		circle_center_pos.x + cos(angle_rad) * circle_radius,
 		circle_center_pos.y + sin(angle_rad) * circle_radius
 	)
-	
+
 	var btn_node = letter_instance.get_node("Button")
 	var half_size = btn_node.size / 2.0
 	letter_instance.global_position = spawn_pos - half_size
-	
+
 	var btn_label = find_label_recursive(letter_instance)
 	if btn_label:
 		btn_label.text = char_text
-		
+
 	letter_instance.set_meta("char", char_text)
 	letter_buttons.append(letter_instance)
+
+# ===========================================================================
+# İPUCU / HARF SATIN ALMA
+# ===========================================================================
+
+func _on_ipucu_pressed() -> void:
+	# Henüz açılmamış hücreleri topla
+	var kapali_hucreler: Array = []
+	for coord in tum_hucreler:
+		var cell = tum_hucreler[coord]
+		if is_instance_valid(cell) and not cell.get_meta("revealed", false):
+			kapali_hucreler.append(cell)
+
+	if kapali_hucreler.is_empty():
+		print("Tüm harfler zaten açık!")
+		return
+
+	# Altın yeterli mi?
+	if not _altin_harca(ALTIN_IPUCU_MALIYETI):
+		print("Yeterli altın yok! Gereken: ", ALTIN_IPUCU_MALIYETI, " Mevcut: ", altin)
+		return
+
+	# Rastgele bir kapalı hücreyi aç
+	kapali_hucreler.shuffle()
+	var hedef_hucre = kapali_hucreler[0]
+	hedef_hucre.reveal_letter()
+	hedef_hucre.set_meta("revealed", true)
+
+	print("İpucu kullanıldı! -", ALTIN_IPUCU_MALIYETI, " altın")
+
+	# Eğer tüm bölüm bu açılmayla tamamlandıysa bölüm bitişini tetikle
+	_ipucu_sonrasi_bitis_kontrol()
+
+func _ipucu_sonrasi_bitis_kontrol() -> void:
+	# Her kelimede en az bir kapalı hücre var mı kontrol et
+	for kelime in word_cells_map:
+		if discovered_words.has(kelime):
+			continue
+		# Bu kelimeye ait tüm hücreler açıldıysa kelimeyi keşfedilmiş say
+		var hepsi_acik = true
+		for cell in word_cells_map[kelime]:
+			if not cell.get_meta("revealed", false):
+				hepsi_acik = false
+				break
+		if hepsi_acik and not discovered_words.has(kelime):
+			discovered_words.append(kelime)
+
+	if discovered_words.size() == word_cells_map.size():
+		print("İpucuyla bölüm tamamlandı!")
+		_show_level_complete_panel()
+
+# ===========================================================================
+# SÜRÜKLEME / GİRİŞ
+# ===========================================================================
 
 func _letter_center(button_node: Node) -> Vector2:
 	var btn_node = button_node.get_node("Button")
@@ -199,73 +314,91 @@ func _input(event: InputEvent) -> void:
 
 func _on_letter_entered(button_node: Node) -> void:
 	if not is_dragging:
-		return 
-		
+		return
 	if not selected_buttons.has(button_node):
 		selected_buttons.append(button_node)
-		
 		var char_val = button_node.get_meta("char")
 		current_word += char_val
 		preview_label.text = current_word
-		
 		line_node.add_point(_letter_center(button_node))
 
 func _process(_delta: float) -> void:
 	if is_dragging and selected_buttons.size() > 0:
 		var mouse_pos = get_global_mouse_position()
-		
 		if line_node.points.size() > selected_buttons.size():
 			line_node.set_point_position(line_node.points.size() - 1, mouse_pos)
 		else:
 			line_node.add_point(mouse_pos)
 
-# --- SÜPER KATMAN DESTEKLİ KONTROL MOTORU ---
+# ===========================================================================
+# KELİME KONTROL MOTORU
+# ===========================================================================
+
 func check_final_word() -> void:
 	if discovered_words.has(current_word):
-		print("Bu kelimeyi zaten buldun kanka!")
+		print("Bu kelimeyi zaten buldun!")
 	elif word_cells_map.has(current_word):
-		print("Tebrikler kanka! Şerit açılıyor: ", current_word)
+		print("Doğru! Şerit açılıyor: ", current_word)
 		discovered_words.append(current_word)
-		
+
 		var cells_to_open = word_cells_map[current_word]
 		for cell in cells_to_open:
 			cell.reveal_letter()
-			
+			cell.set_meta("revealed", true)
+
+		# Her doğru kelime için altın ödülü
+		_altin_kazan(ALTIN_KELIME_ODULU)
+
 		if discovered_words.size() == word_cells_map.size():
-			print("BÖLÜM BİTTİ KANKA! 🎉")
+			print("BÖLÜM BİTTİ! 🎉")
 			_show_level_complete_panel()
 	else:
 		print("Yanlış kelime!")
-		
+
 	current_word = ""
-	preview_label.text = "" 
+	preview_label.text = ""
 	selected_buttons.clear()
 	line_node.clear_points()
 
+# ===========================================================================
+# BÖLÜM BİTİŞ PANELİ
+# ===========================================================================
+
 func _show_level_complete_panel() -> void:
 	is_dragging = false
-	# Bir sonraki bölüm numarasını hesapla (100 sonrası 1'e döner)
+
+	# Bölüm tamamlama bonusu
+	_altin_kazan(ALTIN_BOLUM_ODULU)
+
+	# Sonraki bölüm numarası
 	var sonraki = current_level_id + 1
 	if sonraki > 100:
 		sonraki = 1
-	# Butonu bul ve metnini güncelle
+
 	var btn = get_node_or_null("WinLayer/WinPanel/Box/VBox/NextLevelButton")
 	if btn:
 		btn.text = "%d. Bölüme Başla" % sonraki
+
+	# Bonus yazısını güncelle
+	var bonus_lbl = get_node_or_null("WinLayer/WinPanel/Box/VBox/BonusLabel")
+	if bonus_lbl:
+		bonus_lbl.text = "+%d Altın Kazandın! 🪙" % ALTIN_BOLUM_ODULU
+
 	win_panel.visible = true
+
+# ===========================================================================
+# SONRAKI BÖLÜM
+# ===========================================================================
 
 func _on_next_level_pressed() -> void:
 	current_level_id += 1
-	# 100 bölüm bitince başa sar
 	if current_level_id > 100:
 		current_level_id = 1
 	_save_level_id(current_level_id)
-	# Mevcut grid ve harfleri temizle, yeni bölümü yükle
 	_sahneyi_sifirla()
 	load_and_build_puzzle()
 
 func _sahneyi_sifirla() -> void:
-	# Önceki bölümden kalan grid hücrelerini ve harf butonlarını temizle
 	for btn in letter_buttons:
 		if is_instance_valid(btn):
 			btn.queue_free()
@@ -276,6 +409,7 @@ func _sahneyi_sifirla() -> void:
 			if is_instance_valid(cell):
 				cell.queue_free()
 	word_cells_map.clear()
+	tum_hucreler.clear()
 
 	discovered_words.clear()
 	selected_buttons.clear()
@@ -285,12 +419,17 @@ func _sahneyi_sifirla() -> void:
 	preview_label.text = ""
 	win_panel.visible = false
 
+# ===========================================================================
+# YARDIMCI FONKSİYONLAR
+# ===========================================================================
+
 func find_label_recursive(node: Node) -> Label:
 	if node is Label:
 		return node
 	for child in node.get_children():
 		var res = find_label_recursive(child)
-		if res: return res
+		if res:
+			return res
 	return null
 
 func find_color_rect_recursive(node: Node) -> ColorRect:
@@ -298,5 +437,6 @@ func find_color_rect_recursive(node: Node) -> ColorRect:
 		return node
 	for child in node.get_children():
 		var res = find_color_rect_recursive(child)
-		if res: return res
+		if res:
+			return res
 	return null

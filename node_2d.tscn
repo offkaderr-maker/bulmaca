@@ -7,6 +7,14 @@ line_spacing = 50.0
 font_size = 19
 font_color = Color(1, 0.07058824, 1, 1)
 
+[sub_resource type="LabelSettings" id="LabelSettings_altin"]
+font_size = 20
+font_color = Color(1, 0.85, 0.1, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_ipucu"]
+font_size = 18
+font_color = Color(1, 1, 1, 1)
+
 [node name="GameManager" type="Node2D" unique_id=1257173046]
 script = ExtResource("1_wtcfe")
 
@@ -24,6 +32,29 @@ offset_bottom = 590.0
 label_settings = SubResource("LabelSettings_wtcfe")
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="HudLayer" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="AltinLabel" type="Label" parent="HudLayer"]
+offset_left = 360.0
+offset_top = 12.0
+offset_right = 530.0
+offset_bottom = 48.0
+label_settings = SubResource("LabelSettings_altin")
+text = "🪙 Altın: 0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="IpucuButton" type="Button" parent="HudLayer"]
+custom_minimum_size = Vector2(140, 52)
+offset_left = 10.0
+offset_top = 890.0
+offset_right = 150.0
+offset_bottom = 942.0
+text = "💡 İpucu (10🪙)"
+
+[connection signal="pressed" from="HudLayer/IpucuButton" to="." method="_on_ipucu_pressed"]
 
 [node name="WinLayer" type="CanvasLayer" parent="."]
 layer = 10
@@ -56,9 +87,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -150.0
-offset_top = -80.0
+offset_top = -100.0
 offset_right = 150.0
-offset_bottom = 80.0
+offset_bottom = 100.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -69,9 +100,16 @@ alignment = 1
 
 [node name="TitleLabel" type="Label" parent="WinLayer/WinPanel/Box/VBox"]
 layout_mode = 2
-text = "Tebrikler"
+text = "Tebrikler 🎉"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="BonusLabel" type="Label" parent="WinLayer/WinPanel/Box/VBox"]
+layout_mode = 2
+text = "+5 Altın Kazandın!"
+horizontal_alignment = 1
+vertical_alignment = 1
+modulate = Color(1, 0.85, 0.1, 1)
 
 [node name="NextLevelButton" type="Button" parent="WinLayer/WinPanel/Box/VBox"]
 custom_minimum_size = Vector2(220, 44)
