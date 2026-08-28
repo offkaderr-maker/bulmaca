@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dw047vddy617n"]
 
 [ext_resource type="Script" uid="uid://sgobeq5iox8t" path="res://node_2d.gd" id="1_wtcfe"]
+[ext_resource type="Script" uid="uid://sky_layer_script" path="res://scenes/sky_layer.gd" id="2_skylyr"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_wtcfe"]
 line_spacing = 50.0
@@ -17,6 +18,10 @@ font_color = Color(1, 1, 1, 1)
 
 [node name="GameManager" type="Node2D" unique_id=1257173046]
 script = ExtResource("1_wtcfe")
+
+[node name="GokKatmani" type="CanvasLayer" parent="."]
+layer = -10
+script = ExtResource("2_skylyr")
 
 [node name="Line2D" type="Line2D" parent="." unique_id=490837098]
 width = 15.0
