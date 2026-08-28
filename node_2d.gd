@@ -16,6 +16,9 @@ var valid_words: Array = []
 
 var word_cells_map: Dictionary = {}
 var discovered_words: Array = []
+var letter_buttons: Array = []
+var last_drag_pos: Vector2 = Vector2.ZERO
+const LETTER_HIT_RADIUS: float = 48.0
 
 func _ready() -> void:
 	load_and_build_puzzle()
@@ -112,18 +115,39 @@ func spawn_letter_on_circle(char_text: String, angle_rad: float) -> void:
 		btn_label.text = char_text
 		
 	letter_instance.set_meta("char", char_text)
-	
-	var area_node = letter_instance.get_node("Area2D")
-	area_node.connect("mouse_entered", Callable(self, "_on_letter_entered").bind(letter_instance))
+	letter_buttons.append(letter_instance)
+
+func _letter_center(button_node: Node) -> Vector2:
+	var btn_node = button_node.get_node("Button")
+	return button_node.global_position + (btn_node.size / 2.0)
+
+func _pick_letters_along_segment(from_pos: Vector2, to_pos: Vector2) -> void:
+	var hits: Array = []
+	for button_node in letter_buttons:
+		if selected_buttons.has(button_node):
+			continue
+		var center = _letter_center(button_node)
+		var closest = Geometry2D.get_closest_point_to_segment(center, from_pos, to_pos)
+		if closest.distance_to(center) <= LETTER_HIT_RADIUS:
+			hits.append([from_pos.distance_to(closest), button_node])
+	hits.sort_custom(func(a, b): return a[0] < b[0])
+	for hit in hits:
+		_on_letter_entered(hit[1])
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			is_dragging = true
-			preview_label.text = "" 
+			preview_label.text = ""
+			last_drag_pos = get_global_mouse_position()
+			_pick_letters_along_segment(last_drag_pos, last_drag_pos)
 		else:
 			is_dragging = false
 			check_final_word()
+	elif event is InputEventMouseMotion and is_dragging:
+		var now = get_global_mouse_position()
+		_pick_letters_along_segment(last_drag_pos, now)
+		last_drag_pos = now
 
 func _on_letter_entered(button_node: Node) -> void:
 	if not is_dragging:
@@ -136,9 +160,7 @@ func _on_letter_entered(button_node: Node) -> void:
 		current_word += char_val
 		preview_label.text = current_word
 		
-		var btn_node = button_node.get_node("Button")
-		var btn_center = button_node.global_position + (btn_node.size / 2.0)
-		line_node.add_point(btn_center)
+		line_node.add_point(_letter_center(button_node))
 
 func _process(_delta: float) -> void:
 	if is_dragging and selected_buttons.size() > 0:
