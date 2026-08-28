@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Bulmaca"
-run/main_scene="uid://dw047vddy617n"
+run/main_scene="res://scenes/main_menu.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
