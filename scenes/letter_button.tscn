@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://c665rrqkc7l4a"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_xrivr"]
+radius = 35.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_5njv0"]
+font_size = 42
+outline_size = 7
+
+[node name="LetterButton" type="Control" unique_id=52388653]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1176524614]
+position = Vector2(30, 30)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=530871707]
+shape = SubResource("CircleShape2D_xrivr")
+
+[node name="Button" type="Button" parent="." unique_id=2021456122]
+layout_mode = 0
+offset_right = 60.0
+offset_bottom = 60.0
+
+[node name="Label" type="Label" parent="Button" unique_id=1903643880]
+layout_mode = 0
+offset_right = 58.0
+offset_bottom = 58.0
+label_settings = SubResource("LabelSettings_5njv0")
+horizontal_alignment = 1
+vertical_alignment = 1

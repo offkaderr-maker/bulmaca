@@ -1,0 +1,598 @@
+{
+  "level_id": 1,
+  "target_letters": [
+    "K",
+    "A",
+    "N",
+    "K",
+    "A",
+    "L",
+    "A"
+  ],
+  "circle_layout": [
+    {
+      "char": "K",
+      "index": 0,
+      "angle_rad": 0.0,
+      "offset_x": 200.0,
+      "offset_y": 0.0
+    },
+    {
+      "char": "A",
+      "index": 1,
+      "angle_rad": 0.8976,
+      "offset_x": 124.7,
+      "offset_y": 156.37
+    },
+    {
+      "char": "N",
+      "index": 2,
+      "angle_rad": 1.7952,
+      "offset_x": -44.5,
+      "offset_y": 194.99
+    },
+    {
+      "char": "K",
+      "index": 3,
+      "angle_rad": 2.6928,
+      "offset_x": -180.19,
+      "offset_y": 86.78
+    },
+    {
+      "char": "A",
+      "index": 4,
+      "angle_rad": 3.5904,
+      "offset_x": -180.19,
+      "offset_y": -86.78
+    },
+    {
+      "char": "L",
+      "index": 5,
+      "angle_rad": 4.488,
+      "offset_x": -44.5,
+      "offset_y": -194.99
+    },
+    {
+      "char": "A",
+      "index": 6,
+      "angle_rad": 5.3856,
+      "offset_x": 124.7,
+      "offset_y": -156.37
+    }
+  ],
+  "bounding_box": {
+    "min_x": 0,
+    "max_x": 14,
+    "min_y": 0,
+    "max_y": 11
+  },
+  "islands_count": 1,
+  "words_on_board": [
+    {
+      "word": "KANKALA",
+      "direction": "horizontal",
+      "start_x": 5,
+      "start_y": 6,
+      "cells": [
+        {
+          "x": 5,
+          "y": 6,
+          "char": "K"
+        },
+        {
+          "x": 6,
+          "y": 6,
+          "char": "A"
+        },
+        {
+          "x": 7,
+          "y": 6,
+          "char": "N"
+        },
+        {
+          "x": 8,
+          "y": 6,
+          "char": "K"
+        },
+        {
+          "x": 9,
+          "y": 6,
+          "char": "A"
+        },
+        {
+          "x": 10,
+          "y": 6,
+          "char": "L"
+        },
+        {
+          "x": 11,
+          "y": 6,
+          "char": "A"
+        }
+      ]
+    },
+    {
+      "word": "ALAKAN",
+      "direction": "vertical",
+      "start_x": 5,
+      "start_y": 3,
+      "cells": [
+        {
+          "x": 5,
+          "y": 3,
+          "char": "A"
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "char": "L"
+        },
+        {
+          "x": 5,
+          "y": 5,
+          "char": "A"
+        },
+        {
+          "x": 5,
+          "y": 6,
+          "char": "K"
+        },
+        {
+          "x": 5,
+          "y": 7,
+          "char": "A"
+        },
+        {
+          "x": 5,
+          "y": 8,
+          "char": "N"
+        }
+      ]
+    },
+    {
+      "word": "KANKA",
+      "direction": "vertical",
+      "start_x": 7,
+      "start_y": 4,
+      "cells": [
+        {
+          "x": 7,
+          "y": 4,
+          "char": "K"
+        },
+        {
+          "x": 7,
+          "y": 5,
+          "char": "A"
+        },
+        {
+          "x": 7,
+          "y": 6,
+          "char": "N"
+        },
+        {
+          "x": 7,
+          "y": 7,
+          "char": "K"
+        },
+        {
+          "x": 7,
+          "y": 8,
+          "char": "A"
+        }
+      ]
+    },
+    {
+      "word": "ALAKA",
+      "direction": "vertical",
+      "start_x": 9,
+      "start_y": 6,
+      "cells": [
+        {
+          "x": 9,
+          "y": 6,
+          "char": "A"
+        },
+        {
+          "x": 9,
+          "y": 7,
+          "char": "L"
+        },
+        {
+          "x": 9,
+          "y": 8,
+          "char": "A"
+        },
+        {
+          "x": 9,
+          "y": 9,
+          "char": "K"
+        },
+        {
+          "x": 9,
+          "y": 10,
+          "char": "A"
+        }
+      ]
+    },
+    {
+      "word": "ANLAK",
+      "direction": "vertical",
+      "start_x": 11,
+      "start_y": 6,
+      "cells": [
+        {
+          "x": 11,
+          "y": 6,
+          "char": "A"
+        },
+        {
+          "x": 11,
+          "y": 7,
+          "char": "N"
+        },
+        {
+          "x": 11,
+          "y": 8,
+          "char": "L"
+        },
+        {
+          "x": 11,
+          "y": 9,
+          "char": "A"
+        },
+        {
+          "x": 11,
+          "y": 10,
+          "char": "K"
+        }
+      ]
+    },
+    {
+      "word": "AKLAN",
+      "direction": "horizontal",
+      "start_x": 2,
+      "start_y": 3,
+      "cells": [
+        {
+          "x": 2,
+          "y": 3,
+          "char": "A"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "char": "K"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "char": "L"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "char": "A"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "char": "N"
+        }
+      ]
+    },
+    {
+      "word": "KALA",
+      "direction": "horizontal",
+      "start_x": 2,
+      "start_y": 5,
+      "cells": [
+        {
+          "x": 2,
+          "y": 5,
+          "char": "K"
+        },
+        {
+          "x": 3,
+          "y": 5,
+          "char": "A"
+        },
+        {
+          "x": 4,
+          "y": 5,
+          "char": "L"
+        },
+        {
+          "x": 5,
+          "y": 5,
+          "char": "A"
+        }
+      ]
+    },
+    {
+      "word": "ANKA",
+      "direction": "horizontal",
+      "start_x": 2,
+      "start_y": 7,
+      "cells": [
+        {
+          "x": 2,
+          "y": 7,
+          "char": "A"
+        },
+        {
+          "x": 3,
+          "y": 7,
+          "char": "N"
+        },
+        {
+          "x": 4,
+          "y": 7,
+          "char": "K"
+        },
+        {
+          "x": 5,
+          "y": 7,
+          "char": "A"
+        }
+      ]
+    },
+    {
+      "word": "AKAN",
+      "direction": "horizontal",
+      "start_x": 11,
+      "start_y": 9,
+      "cells": [
+        {
+          "x": 11,
+          "y": 9,
+          "char": "A"
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "char": "K"
+        },
+        {
+          "x": 13,
+          "y": 9,
+          "char": "A"
+        },
+        {
+          "x": 14,
+          "y": 9,
+          "char": "N"
+        }
+      ]
+    },
+    {
+      "word": "ANLA",
+      "direction": "horizontal",
+      "start_x": 6,
+      "start_y": 10,
+      "cells": [
+        {
+          "x": 6,
+          "y": 10,
+          "char": "A"
+        },
+        {
+          "x": 7,
+          "y": 10,
+          "char": "N"
+        },
+        {
+          "x": 8,
+          "y": 10,
+          "char": "L"
+        },
+        {
+          "x": 9,
+          "y": 10,
+          "char": "A"
+        }
+      ]
+    },
+    {
+      "word": "KANA",
+      "direction": "horizontal",
+      "start_x": 7,
+      "start_y": 4,
+      "cells": [
+        {
+          "x": 7,
+          "y": 4,
+          "char": "K"
+        },
+        {
+          "x": 8,
+          "y": 4,
+          "char": "A"
+        },
+        {
+          "x": 9,
+          "y": 4,
+          "char": "N"
+        },
+        {
+          "x": 10,
+          "y": 4,
+          "char": "A"
+        }
+      ]
+    },
+    {
+      "word": "ALAN",
+      "direction": "vertical",
+      "start_x": 6,
+      "start_y": 0,
+      "cells": [
+        {
+          "x": 6,
+          "y": 0,
+          "char": "A"
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "char": "L"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "char": "A"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "char": "N"
+        }
+      ]
+    },
+    {
+      "word": "LAKA",
+      "direction": "vertical",
+      "start_x": 2,
+      "start_y": 0,
+      "cells": [
+        {
+          "x": 2,
+          "y": 0,
+          "char": "L"
+        },
+        {
+          "x": 2,
+          "y": 1,
+          "char": "A"
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "char": "K"
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "char": "A"
+        }
+      ]
+    },
+    {
+      "word": "ANAL",
+      "direction": "vertical",
+      "start_x": 4,
+      "start_y": 0,
+      "cells": [
+        {
+          "x": 4,
+          "y": 0,
+          "char": "A"
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "char": "N"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "char": "A"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "char": "L"
+        }
+      ]
+    },
+    {
+      "word": "KAK",
+      "direction": "vertical",
+      "start_x": 13,
+      "start_y": 8,
+      "cells": [
+        {
+          "x": 13,
+          "y": 8,
+          "char": "K"
+        },
+        {
+          "x": 13,
+          "y": 9,
+          "char": "A"
+        },
+        {
+          "x": 13,
+          "y": 10,
+          "char": "K"
+        }
+      ]
+    },
+    {
+      "word": "KAN",
+      "direction": "vertical",
+      "start_x": 6,
+      "start_y": 9,
+      "cells": [
+        {
+          "x": 6,
+          "y": 9,
+          "char": "K"
+        },
+        {
+          "x": 6,
+          "y": 10,
+          "char": "A"
+        },
+        {
+          "x": 6,
+          "y": 11,
+          "char": "N"
+        }
+      ]
+    },
+    {
+      "word": "KAL",
+      "direction": "horizontal",
+      "start_x": 0,
+      "start_y": 0,
+      "cells": [
+        {
+          "x": 0,
+          "y": 0,
+          "char": "K"
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "char": "A"
+        },
+        {
+          "x": 2,
+          "y": 0,
+          "char": "L"
+        }
+      ]
+    }
+  ],
+  "bonus_words": [],
+  "valid_word_list": [
+    "KALA",
+    "ANKA",
+    "AKAN",
+    "KANKA",
+    "ALAKA",
+    "ANLA",
+    "ANLAK",
+    "AKLAN",
+    "KAK",
+    "KANA",
+    "ALAKAN",
+    "ALAN",
+    "KAN",
+    "KANKALA",
+    "LAKA",
+    "KAL",
+    "ANAL"
+  ]
+}
