@@ -25,27 +25,35 @@ var current_level_id: int = 1
 
 func _ready() -> void:
 	current_level_id = _load_saved_level_id()
-	var next_scene := _scene_path_for_level(current_level_id)
-	if next_scene != "" and next_scene != scene_file_path:
-		get_tree().change_scene_to_file(next_scene)
-		return
 	load_and_build_puzzle()
 
-func _json_path_for_level(level_id: int) -> String:
-	if level_id <= 1:
-		return "res://bulmaca_cikisi.json"
-	var numbered := "res://bulmaca_cikisi_%d.json" % level_id
-	if FileAccess.file_exists(numbered):
-		return numbered
-	return "res://bulmaca_cikisi.json"
+# Tüm bölüm verilerini bolumler_listesi.json'dan okur,
+# current_level_id'ye ait bölümü döner.
+# Bulunamazsa null döner.
+func _bolum_verisini_getir(level_id: int) -> Dictionary:
+	var dosya_yolu := "res://bolumler_listesi.json"
+	var file = FileAccess.open(dosya_yolu, FileAccess.READ)
+	if not file:
+		print("Hata: bolumler_listesi.json bulunamadı! Yol: ", dosya_yolu)
+		return {}
+	var json_text = file.get_as_text()
+	file.close()
 
-func _scene_path_for_level(level_id: int) -> String:
-	if level_id <= 1:
-		return ""
-	var numbered := "res://bulmaca_cikisi_%d.json" % level_id
-	if FileAccess.file_exists(numbered):
-		return ""
-	return "res://scenes/bolum_2.tscn"
+	var liste_verisi = JSON.parse_string(json_text)
+	if liste_verisi == null or not liste_verisi.has("bolumler"):
+		print("Hata: bolumler_listesi.json geçersiz format!")
+		return {}
+
+	var bolumler: Array = liste_verisi["bolumler"]
+	for bolum in bolumler:
+		if int(bolum.get("level_id", -1)) == level_id:
+			return bolum
+
+	# Bulunamazsa son geçerli bölümü dön (level aşıldıysa başa sar)
+	print("Uyarı: level_id=", level_id, " bulunamadı, bölüm 1'e dönülüyor.")
+	if bolumler.size() > 0:
+		return bolumler[0]
+	return {}
 
 func _save_level_id(level_id: int) -> void:
 	var cfg := ConfigFile.new()
@@ -64,15 +72,10 @@ func _load_saved_level_id() -> int:
 	return int(cfg.get_value("progress", "level_id", 1))
 
 func load_and_build_puzzle() -> void:
-	var file = FileAccess.open(_json_path_for_level(current_level_id), FileAccess.READ)
-	if not file:
-		print("Hata: JSON dosyası bulunamadı kanka!")
+	var puzzle_data: Dictionary = _bolum_verisini_getir(current_level_id)
+	if puzzle_data.is_empty():
+		print("Hata: Bölüm verisi alınamadı! level_id=", current_level_id)
 		return
-		
-	var json_text = file.get_as_text()
-	file.close()
-	
-	var puzzle_data = JSON.parse_string(json_text)
 	valid_words = puzzle_data["valid_word_list"] 
 	
 	var box = puzzle_data["bounding_box"]
@@ -245,12 +248,34 @@ func _show_level_complete_panel() -> void:
 
 func _on_next_level_pressed() -> void:
 	current_level_id += 1
+	# 100 bölüm bitince başa sar
+	if current_level_id > 100:
+		current_level_id = 1
 	_save_level_id(current_level_id)
-	var next_scene := _scene_path_for_level(current_level_id)
-	if next_scene != "":
-		get_tree().change_scene_to_file(next_scene)
-	else:
-		get_tree().reload_current_scene()
+	# Mevcut grid ve harfleri temizle, yeni bölümü yükle
+	_sahneyi_sifirla()
+	load_and_build_puzzle()
+
+func _sahneyi_sifirla() -> void:
+	# Önceki bölümden kalan grid hücrelerini ve harf butonlarını temizle
+	for btn in letter_buttons:
+		if is_instance_valid(btn):
+			btn.queue_free()
+	letter_buttons.clear()
+
+	for key in word_cells_map:
+		for cell in word_cells_map[key]:
+			if is_instance_valid(cell):
+				cell.queue_free()
+	word_cells_map.clear()
+
+	discovered_words.clear()
+	selected_buttons.clear()
+	current_word = ""
+	is_dragging = false
+	line_node.clear_points()
+	preview_label.text = ""
+	win_panel.visible = false
 
 func find_label_recursive(node: Node) -> Label:
 	if node is Label:
