@@ -1,6 +1,70 @@
-[gd_scene load_steps=2 format=3 uid="uid://cmainmenubulmaca"]
+[gd_scene load_steps=3 format=3 uid="uid://cmainmenubulmaca"]
 
 [ext_resource type="Script" path="res://scenes/main_menu.gd" id="1_menu"]
+[ext_resource type="Script" path="res://scenes/sky_layer.gd" id="2_skylyr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_logo_harf"]
+bg_color = Color(1.0, 1.0, 1.0, 0.28)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1.0, 1.0, 1.0, 0.60)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+shadow_color = Color(0.0, 0.15, 0.35, 0.18)
+shadow_size = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(1.0, 1.0, 1.0, 0.15)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1.0, 1.0, 1.0, 0.30)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_left = 20
+corner_radius_bottom_right = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_buton_normal"]
+bg_color = Color(1.0, 1.0, 1.0, 0.92)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
+shadow_color = Color(0.0, 0.18, 0.42, 0.28)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_buton_hover"]
+bg_color = Color(0.94, 0.97, 1.0, 1.0)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
+shadow_color = Color(0.0, 0.18, 0.42, 0.35)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_buton_pressed"]
+bg_color = Color(0.75, 0.92, 1.0, 1.0)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -11,62 +75,168 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_menu")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="GokKatmani" type="CanvasLayer" parent="."]
+layer = -10
+script = ExtResource("2_skylyr")
+
+[node name="UI" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-color = Color(0.133, 0.420, 0.776, 1)
-
-[node name="Accent" type="ColorRect" parent="."]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -8.0
-grow_horizontal = 2
-grow_vertical = 0
-mouse_filter = 2
-color = Color(0.18, 0.8, 0.44, 1)
-
-[node name="Center" type="CenterContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="VBox" type="VBoxContainer" parent="Center"]
-layout_mode = 2
-theme_override_constants/separation = 28
+theme_override_constants/separation = 0
 alignment = 1
 
-[node name="Title" type="Label" parent="Center/VBox"]
+[node name="LogoAlani" type="Control" parent="UI"]
+custom_minimum_size = Vector2(0, 260)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.98, 1, 1)
-theme_override_font_sizes/font_size = 48
-text = "BULMACA"
+size_flags_vertical = 3
+
+[node name="LogoSatiri" type="HBoxContainer" parent="UI/LogoAlani"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="H1" type="PanelContainer" parent="UI/LogoAlani/LogoSatiri"]
+custom_minimum_size = Vector2(62, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_logo_harf")
+
+[node name="L" type="Label" parent="UI/LogoAlani/LogoSatiri/H1"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0, 0.0, 0.0, 1.0)
+theme_override_font_sizes/font_size = 36
+text = "B"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="H2" type="PanelContainer" parent="UI/LogoAlani/LogoSatiri"]
+custom_minimum_size = Vector2(62, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_logo_harf")
+
+[node name="L" type="Label" parent="UI/LogoAlani/LogoSatiri/H2"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0, 0.0, 0.0, 1.0)
+theme_override_font_sizes/font_size = 36
+text = "U"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="H3" type="PanelContainer" parent="UI/LogoAlani/LogoSatiri"]
+custom_minimum_size = Vector2(62, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_logo_harf")
+
+[node name="L" type="Label" parent="UI/LogoAlani/LogoSatiri/H3"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0, 0.0, 0.0, 1.0)
+theme_override_font_sizes/font_size = 36
+text = "L"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="H4" type="PanelContainer" parent="UI/LogoAlani/LogoSatiri"]
+custom_minimum_size = Vector2(62, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_logo_harf")
+
+[node name="L" type="Label" parent="UI/LogoAlani/LogoSatiri/H4"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0, 0.0, 0.0, 1.0)
+theme_override_font_sizes/font_size = 36
+text = "M"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="H5" type="PanelContainer" parent="UI/LogoAlani/LogoSatiri"]
+custom_minimum_size = Vector2(62, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_logo_harf")
+
+[node name="L" type="Label" parent="UI/LogoAlani/LogoSatiri/H5"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0, 0.0, 0.0, 1.0)
+theme_override_font_sizes/font_size = 36
+text = "A"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="H6" type="PanelContainer" parent="UI/LogoAlani/LogoSatiri"]
+custom_minimum_size = Vector2(62, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_logo_harf")
+
+[node name="L" type="Label" parent="UI/LogoAlani/LogoSatiri/H6"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0, 0.0, 0.0, 1.0)
+theme_override_font_sizes/font_size = 36
+text = "C"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="H7" type="PanelContainer" parent="UI/LogoAlani/LogoSatiri"]
+custom_minimum_size = Vector2(62, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_logo_harf")
+
+[node name="L" type="Label" parent="UI/LogoAlani/LogoSatiri/H7"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0, 0.0, 0.0, 1.0)
+theme_override_font_sizes/font_size = 36
+text = "A"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OrtaPanel" type="PanelContainer" parent="UI"]
+custom_minimum_size = Vector2(0, 320)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBox" type="VBoxContainer" parent="UI/OrtaPanel"]
+layout_mode = 2
+theme_override_constants/separation = 32
+alignment = 1
+
+[node name="Subtitle" type="Label" parent="UI/OrtaPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1.0, 1.0, 1.0, 0.72)
+theme_override_font_sizes/font_size = 17
+text = "Kelime bulmaca"
 horizontal_alignment = 1
 
-[node name="Subtitle" type="Label" parent="Center/VBox"]
+[node name="LevelLabel" type="Label" parent="UI/OrtaPanel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.82, 0.88, 1)
-theme_override_font_sizes/font_size = 18
-text = "Kelime çarkı"
+theme_override_colors/font_color = Color(1.0, 1.0, 1.0, 0.50)
+theme_override_font_sizes/font_size = 15
+text = ""
 horizontal_alignment = 1
 
-[node name="PlayButton" type="Button" parent="Center/VBox"]
-custom_minimum_size = Vector2(360, 64)
+[node name="PlayButton" type="Button" parent="UI/OrtaPanel/VBox"]
+custom_minimum_size = Vector2(300, 68)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(0.9, 1, 0.92, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.08, 0.22, 0.46, 1.0)
+theme_override_colors/font_hover_color = Color(0.05, 0.18, 0.40, 1.0)
+theme_override_colors/font_pressed_color = Color(0.0, 0.28, 0.58, 1.0)
+theme_override_font_sizes/font_size = 21
+theme_override_styles/normal   = SubResource("StyleBoxFlat_buton_normal")
+theme_override_styles/hover    = SubResource("StyleBoxFlat_buton_hover")
+theme_override_styles/pressed  = SubResource("StyleBoxFlat_buton_pressed")
+theme_override_styles/focus    = SubResource("StyleBoxFlat_buton_normal")
 text = "OYUNA BAŞLA"
 
-[connection signal="pressed" from="Center/VBox/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="UI/OrtaPanel/VBox/PlayButton" to="." method="_on_play_button_pressed"]
+
+[node name="AltBosluk" type="Control" parent="UI"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
