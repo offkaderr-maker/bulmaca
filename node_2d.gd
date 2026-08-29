@@ -3,8 +3,14 @@ extends Node2D
 @export var cell_scene: PackedScene = preload("res://scenes/grid_cell.tscn")
 @export var letter_button_scene: PackedScene = preload("res://scenes/letter_button.tscn")
 
+# Başlangıç değerleri — _ready()'de viewport'a göre yeniden hesaplanır
 var circle_center_pos: Vector2 = Vector2(270, 750)
 var circle_radius: float = 130.0
+
+# Viewport'tan türetilen grid kısıtları — load_and_build_puzzle() bunları kullanır
+var _vp_grid_max_w: float  = 460.0
+var _vp_grid_max_h: float  = 380.0
+var _vp_grid_start_y: float = 120.0
 
 # --- TEMEL DEĞİŞKENLER ---
 @onready var line_node: Line2D = $Line2D
@@ -41,6 +47,24 @@ var tum_hucreler: Dictionary = {}
 # ===========================================================================
 
 func _ready() -> void:
+	# --- Viewport'a göre dinamik konumlandırma ---
+	# stretch/aspect="keep" ile viewport her zaman 540×960 oranında gelir;
+	# ama güvenli taraf için her zaman gerçek görünür boyutu sorguluyoruz.
+	var vp := get_viewport().get_visible_rect().size
+	var vw := vp.x   # örn. 540
+	var vh := vp.y   # örn. 960
+
+	# Harf çemberi: yatay orta, alt %22'sinin ortasında
+	circle_center_pos = Vector2(vw * 0.5, vh * 0.78)
+	# Çember yarıçapı: genişliğin %24'ü (540'ta 130px)
+	circle_radius = vw * 0.24
+
+	# Grid kısıtları: ekranın %85 genişliği, üst %50'si yüksekliği
+	_vp_grid_max_w    = vw * 0.852    # 540×0.852 ≈ 460
+	_vp_grid_max_h    = vh * 0.396    # 960×0.396 ≈ 380
+	_vp_grid_start_y  = vh * 0.125    # 960×0.125 = 120
+
+	# --- Normal başlangıç akışı ---
 	current_level_id = _load_saved_level_id()
 	altin = _load_saved_altin()
 	_altin_guncelle()
@@ -202,8 +226,8 @@ func load_and_build_puzzle() -> void:
 	var grid_width_cells  = (box["max_x"] - box["min_x"]) + 1
 	var grid_height_cells = (box["max_y"] - box["min_y"]) + 1
 
-	var max_allowed_width:  float = 460.0
-	var max_allowed_height: float = 380.0
+	var max_allowed_width:  float = _vp_grid_max_w
+	var max_allowed_height: float = _vp_grid_max_h
 
 	var scale_x = max_allowed_width  / (grid_width_cells  * 64.0)
 	var scale_y = max_allowed_height / (grid_height_cells * 64.0)
@@ -213,8 +237,9 @@ func load_and_build_puzzle() -> void:
 	var total_grid_pixel_width  = grid_width_cells  * dynamic_cell_spacing
 	var total_grid_pixel_height = grid_height_cells * dynamic_cell_spacing
 
-	var start_x = (540.0 - total_grid_pixel_width)  / 2.0 + (32.0 * final_scale_factor)
-	var start_y = 120.0 + ((max_allowed_height - total_grid_pixel_height) / 2.0) + (32.0 * final_scale_factor)
+	var vw := get_viewport().get_visible_rect().size.x
+	var start_x = (vw - total_grid_pixel_width)  / 2.0 + (32.0 * final_scale_factor)
+	var start_y = _vp_grid_start_y + ((max_allowed_height - total_grid_pixel_height) / 2.0) + (32.0 * final_scale_factor)
 
 	var grid_start_pos = Vector2(start_x, start_y)
 	var created_cells: Dictionary = {}

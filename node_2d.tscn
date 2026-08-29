@@ -42,10 +42,17 @@ vertical_alignment = 1
 layer = 5
 
 [node name="AltinLabel" type="Label" parent="HudLayer"]
-offset_left = 360.0
-offset_top = 12.0
-offset_right = 530.0
-offset_bottom = 48.0
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = 0.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 50.0
+grow_horizontal = 0
+grow_vertical = 1
 label_settings = SubResource("LabelSettings_altin")
 text = "🪙 Altın: 0"
 horizontal_alignment = 2
@@ -53,10 +60,17 @@ vertical_alignment = 1
 
 [node name="IpucuButton" type="Button" parent="HudLayer"]
 custom_minimum_size = Vector2(140, 52)
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
 offset_left = 10.0
-offset_top = 890.0
+offset_top = -70.0
 offset_right = 150.0
-offset_bottom = 942.0
+offset_bottom = -18.0
+grow_horizontal = 1
+grow_vertical = 0
 text = "💡 İpucu (10🪙)"
 
 [connection signal="pressed" from="HudLayer/IpucuButton" to="." method="_on_ipucu_pressed"]
