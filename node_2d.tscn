@@ -24,11 +24,12 @@ layer = -10
 script = ExtResource("2_skylyr")
 
 [node name="Line2D" type="Line2D" parent="." unique_id=490837098]
-width = 15.0
-default_color = Color(0.102234356, 0.23553738, 0.8967309, 1)
+width = 14.0
+default_color = Color(0.0, 0.0, 0.0, 0.88)
 joint_mode = 2
 begin_cap_mode = 2
 end_cap_mode = 2
+antialiased = true
 
 [node name="PreviewLabel" type="Label" parent="." unique_id=1699858430]
 offset_top = 540.0
@@ -105,34 +106,37 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -150.0
-offset_top = -100.0
-offset_right = 150.0
-offset_bottom = 100.0
+offset_left = -190.0
+offset_top = -140.0
+offset_right = 190.0
+offset_bottom = 140.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="VBox" type="VBoxContainer" parent="WinLayer/WinPanel/Box"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 22
 alignment = 1
 
 [node name="TitleLabel" type="Label" parent="WinLayer/WinPanel/Box/VBox"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 36
 text = "Tebrikler 🎉"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="BonusLabel" type="Label" parent="WinLayer/WinPanel/Box/VBox"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 22
 text = "+5 Altın Kazandın!"
 horizontal_alignment = 1
 vertical_alignment = 1
 modulate = Color(1, 0.85, 0.1, 1)
 
 [node name="NextLevelButton" type="Button" parent="WinLayer/WinPanel/Box/VBox"]
-custom_minimum_size = Vector2(220, 44)
+custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
+theme_override_font_sizes/font_size = 22
 text = "Sonraki Bölüm"
 
 [connection signal="pressed" from="WinLayer/WinPanel/Box/VBox/NextLevelButton" to="." method="_on_next_level_pressed"]

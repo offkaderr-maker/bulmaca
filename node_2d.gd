@@ -366,14 +366,17 @@ func _letter_center(button_node: Node) -> Vector2:
 	return button_node.global_position + (btn_node.size / 2.0)
 
 func _pick_letters_along_segment(from_pos: Vector2, to_pos: Vector2) -> void:
+	# Sadece anlık parmak pozisyonunu kullan — segment yakınlığı değil,
+	# harf merkezine doğrudan mesafe kontrolü yapar. Bu sayede çizgi
+	# harfin iç alanına girildiğinde tetiklenir, dışarıdan geçerken tetiklenmez.
 	var hits: Array = []
 	for button_node in letter_buttons:
 		if selected_buttons.has(button_node):
 			continue
 		var center = _letter_center(button_node)
-		var closest = Geometry2D.get_closest_point_to_segment(center, from_pos, to_pos)
-		if closest.distance_to(center) <= LETTER_HIT_RADIUS:
-			hits.append([from_pos.distance_to(closest), button_node])
+		# to_pos = anlık parmak konumu; from_pos eski konum (geri dönüş için saklanır)
+		if to_pos.distance_to(center) <= LETTER_HIT_RADIUS:
+			hits.append([to_pos.distance_to(center), button_node])
 	hits.sort_custom(func(a, b): return a[0] < b[0])
 	for hit in hits:
 		_on_letter_entered(hit[1])
@@ -419,10 +422,16 @@ func _geri_don_kontrol(parmak_pos: Vector2) -> void:
 			# current_word'ün son karakterini sil
 			current_word = current_word.left(current_word.length() - 1)
 			preview_label.text = current_word
-			# Line2D'den son sabit noktayı sil
-			# (en son nokta "takip eden fare noktası" olduğu için ondan bir öncekini siliyoruz)
-			if line_node.get_point_count() > 1:
-				line_node.remove_point(line_node.get_point_count() - 1)
+			# Line2D: _process'in eklediği fare-takip noktası + son harf noktasını kaldır.
+			# Nokta sayısı: [harf_1, harf_2, ..., harf_N, takip_noktası]
+			# Takip noktası varsa onu sil, ardından son harf noktasını sil.
+			var pc := line_node.get_point_count()
+			if pc > selected_buttons.size() + 1:
+				# Takip noktası mevcut — önce onu kaldır
+				line_node.remove_point(pc - 1)
+				pc -= 1
+			if pc > 0:
+				line_node.remove_point(pc - 1)
 		else:
 			# Geri dönüş yok, döngüyü kır
 			break
