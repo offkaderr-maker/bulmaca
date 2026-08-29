@@ -67,6 +67,43 @@ corner_radius_top_right = 14
 corner_radius_bottom_left = 14
 corner_radius_bottom_right = 14
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cark_buton_normal"]
+bg_color = Color(0.14, 0.48, 0.84, 1.0)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_left = 20
+corner_radius_bottom_right = 20
+shadow_color = Color(0.0, 0.21, 0.46, 0.42)
+shadow_size = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cark_buton_hover"]
+bg_color = Color(0.17, 0.58, 0.98, 1.0)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_left = 20
+corner_radius_bottom_right = 20
+shadow_color = Color(0.0, 0.21, 0.46, 0.50)
+shadow_size = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cark_buton_pressed"]
+bg_color = Color(0.09, 0.34, 0.62, 1.0)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_left = 20
+corner_radius_bottom_right = 20
+
 [node name="MainMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -319,24 +356,21 @@ custom_minimum_size = Vector2(400, 420)
 layout_mode = 2
 script = ExtResource("3_spin")
 
-[node name="CevirButon" type="Button" parent="CarkLayer/PopupPanel/IcVBox/CarkNode"]
-custom_minimum_size = Vector2(60, 36)
-layout_mode = 0
-anchor_left = 0.5
-anchor_top = 0.0
-anchor_right = 0.5
-anchor_bottom = 0.0
-offset_left = -30.0
-offset_top = 174.0
-offset_right = 30.0
-offset_bottom = 210.0
-grow_horizontal = 2
-grow_vertical = 1
-theme_override_font_sizes/font_size = 13
+[node name="CevirButon" type="Button" parent="CarkLayer/PopupPanel/IcVBox"]
+custom_minimum_size = Vector2(260, 64)
+layout_mode = 2
+size_flags_horizontal = 4
 theme_override_colors/font_color = Color(1.0, 1.0, 1.0, 1.0)
-text = "ÇEVİR"
+theme_override_colors/font_hover_color = Color(1.0, 1.0, 1.0, 1.0)
+theme_override_colors/font_pressed_color = Color(1.0, 1.0, 1.0, 1.0)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_cark_buton_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_cark_buton_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_cark_buton_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_cark_buton_normal")
+text = "ÇARKI ÇEVİR"
 
-[connection signal="pressed" from="CarkLayer/PopupPanel/IcVBox/CarkNode/CevirButon" to="." method="_on_cevir_pressed"]
+[connection signal="pressed" from="CarkLayer/PopupPanel/IcVBox/CevirButon" to="." method="_on_cevir_pressed"]
 
 [node name="HakLabel" type="Label" parent="CarkLayer/PopupPanel/IcVBox"]
 layout_mode = 2

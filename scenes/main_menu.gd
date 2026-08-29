@@ -15,7 +15,7 @@ const GAME_SCENE := "res://node_2d.tscn"
 # ---------------------------------------------------------------------------
 @onready var cark_layer   : CanvasLayer = $CarkLayer
 @onready var cark_node                  = $CarkLayer/PopupPanel/IcVBox/CarkNode
-@onready var cevir_buton  : Button      = $CarkLayer/PopupPanel/IcVBox/CarkNode/CevirButon
+@onready var cevir_buton  : Button      = $CarkLayer/PopupPanel/IcVBox/CevirButon
 @onready var hak_label    : Label       = $CarkLayer/PopupPanel/IcVBox/HakLabel
 @onready var sonuc_label  : Label       = $CarkLayer/PopupPanel/IcVBox/SonucLabel
 
@@ -24,6 +24,8 @@ const GAME_SCENE := "res://node_2d.tscn"
 # ===========================================================================
 
 func _ready() -> void:
+	_uygula_pastel_cark_rengi()
+
 	# Çark node'una referansları enjekte et
 	cark_node.cevirme_butonu = cevir_buton
 	cark_node.hak_label      = hak_label
@@ -40,6 +42,33 @@ func _ready() -> void:
 
 	# Çark açma butonunu günlük hak durumuna göre güncelle
 	_cark_ac_buton_guncelle()
+
+func _uygula_pastel_cark_rengi() -> void:
+	if not cark_node or not cark_node.has_method("_draw"):
+		return
+
+	var pastel_dilimler := [
+		[2, 35, Color(0.94, 0.72, 0.76, 1.0)],
+		[4, 30, Color(0.70, 0.83, 0.97, 1.0)],
+		[6, 20, Color(0.71, 0.92, 0.81, 1.0)],
+		[8, 10, Color(0.97, 0.89, 0.68, 1.0)],
+		[10, 5, Color(0.81, 0.71, 0.95, 1.0)],
+	]
+
+	var toplam_aci: float = 0.0
+	cark_node._dilim_acilari.clear()
+	for dilim in pastel_dilimler:
+		var oran: float = float(dilim[1]) / 100.0
+		var aciklik: float = oran * TAU
+		cark_node._dilim_acilari.append({
+			"baslangic": toplam_aci,
+			"bitis": toplam_aci + aciklik,
+			"odul": int(dilim[0]),
+			"renk": Color(dilim[2]),
+		})
+		toplam_aci += aciklik
+
+	cark_node.queue_redraw()
 
 func _ana_menu_guncelle() -> void:
 	var level_id := _load_saved_level_id()

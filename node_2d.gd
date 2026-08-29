@@ -47,6 +47,10 @@ var tum_hucreler: Dictionary = {}
 # ===========================================================================
 
 func _ready() -> void:
+	if line_node:
+		line_node.visible = true
+		line_node.width = 10.0
+		line_node.default_color = Color(0.0, 0.0, 0.0, 1.0)
 	# --- Viewport'a göre dinamik konumlandırma ---
 	# stretch/aspect="keep" ile viewport her zaman 540×960 oranında gelir;
 	# ama güvenli taraf için her zaman gerçek görünür boyutu sorguluyoruz.
@@ -160,8 +164,10 @@ func _bolum_kelime_kaydi_temizle(level_id: int) -> void:
 	var cfg := ConfigFile.new()
 	cfg.load(SAVE_PATH)
 	var key := "bolum_%d" % level_id
-	cfg.erase_section_key("words", key)
-	cfg.save(SAVE_PATH)
+	if cfg.has_section("words") and cfg.has_section_key("words", key):
+		cfg.erase_section_key("words", key)
+		cfg.save(SAVE_PATH)
+	# words section yoksa hata vermeden güvenle geç
 
 # ===========================================================================
 # BÖLÜM VERİSİ
@@ -362,24 +368,53 @@ func _ipucu_sonrasi_bitis_kontrol() -> void:
 # ===========================================================================
 
 func _letter_center(button_node: Node) -> Vector2:
-	var btn_node = button_node.get_node("Button")
-	return button_node.global_position + (btn_node.size / 2.0)
+	if not is_instance_valid(button_node):
+		return Vector2.ZERO
+	var btn_node: Button = button_node.get_node("Button") as Button
+	if not is_instance_valid(btn_node):
+		return button_node.global_position
+	return btn_node.get_global_rect().get_center()
 
-func _pick_letters_along_segment(from_pos: Vector2, to_pos: Vector2) -> void:
-	# Sadece anlık parmak pozisyonunu kullan — segment yakınlığı değil,
-	# harf merkezine doğrudan mesafe kontrolü yapar. Bu sayede çizgi
-	# harfin iç alanına girildiğinde tetiklenir, dışarıdan geçerken tetiklenmez.
-	var hits: Array = []
+func _find_letter_under_pointer(pos: Vector2) -> Node:
 	for button_node in letter_buttons:
-		if selected_buttons.has(button_node):
+		if not is_instance_valid(button_node):
 			continue
-		var center = _letter_center(button_node)
-		# to_pos = anlık parmak konumu; from_pos eski konum (geri dönüş için saklanır)
-		if to_pos.distance_to(center) <= LETTER_HIT_RADIUS:
-			hits.append([to_pos.distance_to(center), button_node])
-	hits.sort_custom(func(a, b): return a[0] < b[0])
-	for hit in hits:
-		_on_letter_entered(hit[1])
+		var btn_node: Button = button_node.get_node("Button") as Button
+		if not is_instance_valid(btn_node):
+			continue
+		var rect: Rect2 = btn_node.get_global_rect()
+		if rect.has_point(pos):
+			return button_node
+	return null
+
+func _sync_line_to_selection(mouse_pos: Vector2 = Vector2.ZERO) -> void:
+	if not line_node:
+		return
+	line_node.clear_points()
+	for button_node in selected_buttons:
+		if is_instance_valid(button_node):
+			line_node.add_point(_letter_center(button_node))
+	if is_dragging and selected_buttons.size() > 0 and mouse_pos != Vector2.ZERO:
+		line_node.add_point(mouse_pos)
+	elif is_dragging and selected_buttons.size() == 1:
+		line_node.add_point(_letter_center(selected_buttons[0]))
+
+func _select_letter_if_in_bounds(pos: Vector2) -> void:
+	if not is_dragging:
+		return
+	var button_node = _find_letter_under_pointer(pos)
+	if button_node == null:
+		if selected_buttons.size() > 0:
+			_sync_line_to_selection(pos)
+		return
+	if selected_buttons.has(button_node):
+		_sync_line_to_selection(pos)
+		return
+	selected_buttons.append(button_node)
+	var char_val = button_node.get_meta("char")
+	current_word += char_val
+	preview_label.text = current_word
+	_sync_line_to_selection(pos)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_W:
@@ -390,69 +425,46 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			is_dragging = true
+			selected_buttons.clear()
+			current_word = ""
 			preview_label.text = ""
-			last_drag_pos = get_global_mouse_position()
-			_pick_letters_along_segment(last_drag_pos, last_drag_pos)
+			line_node.clear_points()
+			var start_pos: Vector2 = get_global_mouse_position()
+			_select_letter_if_in_bounds(start_pos)
+			if selected_buttons.size() > 0:
+				_sync_line_to_selection(start_pos)
 		else:
-			is_dragging = false
-			check_final_word()
+			if is_dragging:
+				is_dragging = false
+				check_final_word()
 	elif event is InputEventMouseMotion and is_dragging:
-		var now = get_global_mouse_position()
-		# Önce geri dönüş kontrolü yap, sonra yeni harf eklemeye bak
-		_geri_don_kontrol(now)
-		_pick_letters_along_segment(last_drag_pos, now)
-		last_drag_pos = now
-
-# Parmak son seçili harften uzaklaşıp bir öncekine yaklaşıyorsa son harfi iptal et.
-# Birden fazla harf aynı harekette iptal edilebilir (hızlı geri çekilme için döngü).
-func _geri_don_kontrol(parmak_pos: Vector2) -> void:
-	# En az 2 harf seçili olmalı; tek harfle geri dönüş anlamsız
-	while selected_buttons.size() >= 2:
-		var son_btn    = selected_buttons[selected_buttons.size() - 1]
-		var onceki_btn = selected_buttons[selected_buttons.size() - 2]
-
-		var son_merkez    = _letter_center(son_btn)
-		var onceki_merkez = _letter_center(onceki_btn)
-
-		# Parmak son harften mi yoksa önceki harften mi uzakta?
-		# Öncekine daha yakınsa → son harfi geri al
-		if parmak_pos.distance_to(onceki_merkez) < parmak_pos.distance_to(son_merkez):
-			# Son harfi seçim listesinden çıkar
-			selected_buttons.pop_back()
-			# current_word'ün son karakterini sil
-			current_word = current_word.left(current_word.length() - 1)
-			preview_label.text = current_word
-			# Line2D: _process'in eklediği fare-takip noktası + son harf noktasını kaldır.
-			# Nokta sayısı: [harf_1, harf_2, ..., harf_N, takip_noktası]
-			# Takip noktası varsa onu sil, ardından son harf noktasını sil.
-			var pc := line_node.get_point_count()
-			if pc > selected_buttons.size() + 1:
-				# Takip noktası mevcut — önce onu kaldır
-				line_node.remove_point(pc - 1)
-				pc -= 1
-			if pc > 0:
-				line_node.remove_point(pc - 1)
+		var motion_pos: Vector2 = get_global_mouse_position()
+		_select_letter_if_in_bounds(motion_pos)
+		_sync_line_to_selection(motion_pos)
+	elif event is InputEventScreenTouch:
+		if event.pressed:
+			is_dragging = true
+			selected_buttons.clear()
+			current_word = ""
+			preview_label.text = ""
+			line_node.clear_points()
+			var touch_start: Vector2 = event.position
+			_select_letter_if_in_bounds(touch_start)
+			if selected_buttons.size() > 0:
+				_sync_line_to_selection(touch_start)
 		else:
-			# Geri dönüş yok, döngüyü kır
-			break
-
-func _on_letter_entered(button_node: Node) -> void:
-	if not is_dragging:
-		return
-	if not selected_buttons.has(button_node):
-		selected_buttons.append(button_node)
-		var char_val = button_node.get_meta("char")
-		current_word += char_val
-		preview_label.text = current_word
-		line_node.add_point(_letter_center(button_node))
+			if is_dragging:
+				is_dragging = false
+				check_final_word()
+	elif event is InputEventScreenDrag and is_dragging:
+		var drag_pos: Vector2 = event.position
+		_select_letter_if_in_bounds(drag_pos)
+		_sync_line_to_selection(drag_pos)
 
 func _process(_delta: float) -> void:
 	if is_dragging and selected_buttons.size() > 0:
-		var mouse_pos = get_global_mouse_position()
-		if line_node.points.size() > selected_buttons.size():
-			line_node.set_point_position(line_node.points.size() - 1, mouse_pos)
-		else:
-			line_node.add_point(mouse_pos)
+		var pointer_pos: Vector2 = get_global_mouse_position()
+		_sync_line_to_selection(pointer_pos)
 
 # ===========================================================================
 # KELİME KONTROL MOTORU
