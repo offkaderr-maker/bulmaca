@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dw047vddy617n"]
 
 [ext_resource type="Script" uid="uid://sgobeq5iox8t" path="res://node_2d.gd" id="1_wtcfe"]
-[ext_resource type="Script" uid="uid://sky_layer_script" path="res://scenes/sky_layer.gd" id="2_skylyr"]
+[ext_resource type="Script" path="res://scenes/sky_layer.gd" id="2_skylyr"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_wtcfe"]
 line_spacing = 50.0

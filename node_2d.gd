@@ -420,7 +420,7 @@ func _show_level_complete_panel() -> void:
 
 	# Sonraki bölüm numarası
 	var sonraki = current_level_id + 1
-	if sonraki > 100:
+	if sonraki > 500:
 		sonraki = 1
 
 	var btn = get_node_or_null("WinLayer/WinPanel/Box/VBox/NextLevelButton")
@@ -440,7 +440,7 @@ func _show_level_complete_panel() -> void:
 
 func _on_next_level_pressed() -> void:
 	current_level_id += 1
-	if current_level_id > 100:
+	if current_level_id > 500:
 		current_level_id = 1
 	_save_level_id(current_level_id)
 	_sahneyi_sifirla()
