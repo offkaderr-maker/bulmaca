@@ -102,6 +102,43 @@ func _load_saved_level_id() -> int:
 		return 1
 	return int(cfg.get_value("progress", "level_id", 1))
 
+# Mevcut bölümde bulunan kelimeleri anlık kaydet.
+# Her doğru kelimede çağrılır.
+func _discovered_words_kaydet() -> void:
+	var cfg := ConfigFile.new()
+	cfg.load(SAVE_PATH)
+	var key := "bolum_%d" % current_level_id
+	cfg.set_value("words", key, discovered_words)
+	cfg.save(SAVE_PATH)
+
+# Bölüm yüklendikten sonra, kaydedilmiş kelimeleri oku ve
+# ilgili hücreleri otomatik olarak aç (yeşil/reveal).
+func _discovered_words_yukle() -> void:
+	var cfg := ConfigFile.new()
+	if cfg.load(SAVE_PATH) != OK:
+		return
+	var key  := "bolum_%d" % current_level_id
+	var kayitli = cfg.get_value("words", key, [])
+	if kayitli.is_empty():
+		return
+
+	for kelime in kayitli:
+		if word_cells_map.has(kelime) and not discovered_words.has(kelime):
+			discovered_words.append(kelime)
+			for cell in word_cells_map[kelime]:
+				cell.reveal_letter()
+				cell.set_meta("revealed", true)
+
+	print("Kaldığın yerden devam: ", discovered_words.size(), " kelime geri yüklendi.")
+
+# Bölüm tamamlandığında o bölümün kelime kaydını sil — artık gerek yok.
+func _bolum_kelime_kaydi_temizle(level_id: int) -> void:
+	var cfg := ConfigFile.new()
+	cfg.load(SAVE_PATH)
+	var key := "bolum_%d" % level_id
+	cfg.erase_section_key("words", key)
+	cfg.save(SAVE_PATH)
+
 # ===========================================================================
 # BÖLÜM VERİSİ
 # ===========================================================================
@@ -220,6 +257,9 @@ func load_and_build_puzzle() -> void:
 	for letter_data in circle_layout:
 		spawn_letter_on_circle(letter_data["char"], letter_data["angle_rad"])
 
+	# Grid ve harf çemberi hazır — kaydedilmiş kelimeleri geri yükle
+	_discovered_words_yukle()
+
 func spawn_letter_on_circle(char_text: String, angle_rad: float) -> void:
 	var letter_instance = letter_button_scene.instantiate()
 	add_child(letter_instance)
@@ -271,6 +311,8 @@ func _on_ipucu_pressed() -> void:
 
 	# Eğer tüm bölüm bu açılmayla tamamlandıysa bölüm bitişini tetikle
 	_ipucu_sonrasi_bitis_kontrol()
+	# İpucu sonrası güncel kelime listesini kaydet
+	_discovered_words_kaydet()
 
 func _ipucu_sonrasi_bitis_kontrol() -> void:
 	# Her kelimede en az bir kapalı hücre var mı kontrol et
@@ -394,8 +436,9 @@ func check_final_word() -> void:
 			cell.reveal_letter()
 			cell.set_meta("revealed", true)
 
-		# Her doğru kelime için altın ödülü
+		# Her doğru kelime için altın ödülü ve anlık kayıt
 		_altin_kazan(ALTIN_KELIME_ODULU)
+		_discovered_words_kaydet()
 
 		if discovered_words.size() == word_cells_map.size():
 			print("BÖLÜM BİTTİ! 🎉")
@@ -439,6 +482,8 @@ func _show_level_complete_panel() -> void:
 # ===========================================================================
 
 func _on_next_level_pressed() -> void:
+	# Tamamlanan bölümün ara kelime kaydını temizle (artık gereksiz)
+	_bolum_kelime_kaydi_temizle(current_level_id)
 	current_level_id += 1
 	if current_level_id > 500:
 		current_level_id = 1
