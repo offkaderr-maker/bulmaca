@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cmainmenubulmaca"]
+[gd_scene load_steps=4 format=3 uid="uid://cmainmenubulmaca"]
 
 [ext_resource type="Script" path="res://scenes/main_menu.gd" id="1_menu"]
 [ext_resource type="Script" path="res://scenes/sky_layer.gd" id="2_skylyr"]
+[ext_resource type="Script" path="res://scenes/spin_wheel.gd" id="3_spin"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_logo_harf"]
 bg_color = Color(1.0, 1.0, 1.0, 0.28)
@@ -240,3 +241,113 @@ text = "OYUNA BAŞLA"
 [node name="AltBosluk" type="Control" parent="UI"]
 custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
+
+[node name="CarkButonAlani" type="HBoxContainer" parent="UI/OrtaPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="CarkAcButon" type="Button" parent="UI/OrtaPanel/VBox/CarkButonAlani"]
+custom_minimum_size = Vector2(260, 54)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.05, 1.0)
+theme_override_colors/font_hover_color = Color(1.0, 0.88, 0.20, 1.0)
+theme_override_font_sizes/font_size = 19
+text = "🎡 Günlük Çarkı Çevir"
+
+[connection signal="pressed" from="UI/OrtaPanel/VBox/CarkButonAlani/CarkAcButon" to="." method="_on_cark_ac_pressed"]
+
+[node name="CarkLayer" type="CanvasLayer" parent="."]
+layer = 20
+visible = false
+
+[node name="ArkaDim" type="ColorRect" parent="CarkLayer"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.0, 0.0, 0.0, 0.65)
+
+[node name="PopupPanel" type="PanelContainer" parent="CarkLayer"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -280.0
+offset_right = 200.0
+offset_bottom = 280.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="IcVBox" type="VBoxContainer" parent="CarkLayer/PopupPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="BaslikSatiri" type="HBoxContainer" parent="CarkLayer/PopupPanel/IcVBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="BaslikLabel" type="Label" parent="CarkLayer/PopupPanel/IcVBox/BaslikSatiri"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.12, 0.12, 0.20, 1.0)
+text = "🎡 Günlük Şans Çarkı"
+horizontal_alignment = 1
+size_flags_horizontal = 3
+
+[node name="KapatButon" type="Button" parent="CarkLayer/PopupPanel/IcVBox/BaslikSatiri"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "✕"
+
+[connection signal="pressed" from="CarkLayer/PopupPanel/IcVBox/BaslikSatiri/KapatButon" to="." method="_on_cark_kapat_pressed"]
+
+[node name="CarkNode" type="Control" parent="CarkLayer/PopupPanel/IcVBox"]
+custom_minimum_size = Vector2(400, 420)
+layout_mode = 2
+script = ExtResource("3_spin")
+
+[node name="CevirButon" type="Button" parent="CarkLayer/PopupPanel/IcVBox/CarkNode"]
+custom_minimum_size = Vector2(60, 36)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_left = -30.0
+offset_top = 174.0
+offset_right = 30.0
+offset_bottom = 210.0
+grow_horizontal = 2
+grow_vertical = 1
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1.0, 1.0, 1.0, 1.0)
+text = "ÇEVİR"
+
+[connection signal="pressed" from="CarkLayer/PopupPanel/IcVBox/CarkNode/CevirButon" to="." method="_on_cevir_pressed"]
+
+[node name="HakLabel" type="Label" parent="CarkLayer/PopupPanel/IcVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.25, 0.35, 0.55, 1.0)
+text = "Günlük hak: 5 / 5"
+horizontal_alignment = 1
+
+[node name="SonucLabel" type="Label" parent="CarkLayer/PopupPanel/IcVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.88, 0.62, 0.05, 1.0)
+text = ""
+horizontal_alignment = 1
