@@ -2,9 +2,38 @@
 
 [ext_resource type="Script" uid="uid://cuonshj4efb57" path="res://scenes/grid_cell.gd" id="1_gridcell"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_wtcfe"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kapali"]
+bg_color = Color(1.0, 1.0, 1.0, 0.28)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1.0, 1.0, 1.0, 0.55)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+shadow_color = Color(0.0, 0.15, 0.35, 0.18)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_acik"]
+bg_color = Color(0.18, 0.78, 0.45, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.1, 0.65, 0.35, 1.0)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+shadow_color = Color(0.0, 0.3, 0.15, 0.25)
+shadow_size = 5
+
+[sub_resource type="LabelSettings" id="LabelSettings_harf"]
 font_size = 44
-font_color = Color(0, 0, 0, 1)
+font_color = Color(0.0, 0.0, 0.0, 1.0)
+outline_size = 0
 
 [node name="GridCell" type="Control" unique_id=1076769935]
 custom_minimum_size = Vector2(64, 64)
@@ -14,16 +43,17 @@ offset_right = 64.0
 offset_bottom = 64.0
 script = ExtResource("1_gridcell")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=1477791771]
+[node name="Panel" type="Panel" parent="." unique_id=1477791771]
 layout_mode = 0
 offset_right = 64.0
 offset_bottom = 64.0
+theme_type_variation = &"FlatPanel"
 
 [node name="Label" type="Label" parent="." unique_id=1099913382]
-z_index = 1
+z_index = 2
 layout_mode = 0
 offset_right = 64.0
 offset_bottom = 64.0
-label_settings = SubResource("LabelSettings_wtcfe")
+label_settings = SubResource("LabelSettings_harf")
 horizontal_alignment = 1
 vertical_alignment = 1

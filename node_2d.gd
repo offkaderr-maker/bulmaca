@@ -131,6 +131,25 @@ func _bolum_verisini_getir(level_id: int) -> Dictionary:
 	return {}
 
 # ===========================================================================
+# ÇEMBER ARKA PLAN ÇİZİMİ (draw API — gökyüzü temasıyla uyumlu)
+# ===========================================================================
+
+func _draw() -> void:
+	# Harf çemberinin altına yarı şeffaf disk çiz
+	var disk_radius: float = circle_radius + 52.0
+	# Dış parlak halka
+	draw_circle(circle_center_pos, disk_radius,       Color(1.0, 1.0, 1.0, 0.10))
+	# İç dolgu
+	draw_circle(circle_center_pos, disk_radius - 6.0, Color(1.0, 1.0, 1.0, 0.14))
+	# İnce border çemberi
+	var border_segments := 64
+	var pts := PackedVector2Array()
+	for i in range(border_segments + 1):
+		var a := (2.0 * PI / border_segments) * i
+		pts.append(circle_center_pos + Vector2(cos(a), sin(a)) * (disk_radius - 2.0))
+	draw_polyline(pts, Color(1.0, 1.0, 1.0, 0.40), 2.0, true)
+
+# ===========================================================================
 # BÖLÜM YÜKLEME / İNŞA
 # ===========================================================================
 
@@ -447,6 +466,7 @@ func _sahneyi_sifirla() -> void:
 	line_node.clear_points()
 	preview_label.text = ""
 	win_panel.visible = false
+	queue_redraw()
 
 # ===========================================================================
 # YARDIMCI FONKSİYONLAR
